@@ -1,0 +1,21 @@
+{
+  "name": "@repo/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev src/index.ts",
+    "deploy": "wrangler deploy --minify src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "hono": "^4.10.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251120.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.49.0"
+  }
+}
