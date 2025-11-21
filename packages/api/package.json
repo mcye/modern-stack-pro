@@ -5,16 +5,24 @@
   "type": "module",
   "scripts": {
     "dev": "wrangler dev src/index.ts",
-    "deploy": "wrangler deploy --minify src/index.ts"
+    "deploy": "wrangler deploy --minify src/index.ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@libsql/client": "^0.15.15",
+    "drizzle-orm": "^0.44.7",
     "hono": "^4.10.6"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20251120.0",
+    "drizzle-kit": "^0.31.7",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "wrangler": "^4.49.0"
   }
