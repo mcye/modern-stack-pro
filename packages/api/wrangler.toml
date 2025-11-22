@@ -6,3 +6,8 @@ main = "src/index.ts"
 
 [observability]
 enabled = true
+
+[[kv_namespaces]]
+binding = "USER_CACHE"
+id = "175dfa6ee4034733a14b918e213bb8fb"
+preview_id = "daa59cba4e504a2d818ee0c658b3498a"
