@@ -1,6 +1,9 @@
 name = "modern-stack-api"
 compatibility_date = "2024-11-01"
 
+# 在 Cloudflare Workers 的配置文件中显式开启 Node.js 兼容模式。
+compatibility_flags = ["nodejs_compat"]
+
 # 这里的 main 指向入口文件，虽然我们在命令里指定了，但配置文件里写上也更规范
 main = "src/index.ts"
 
