@@ -1,5 +1,4 @@
-import { sqliteTable, text, integer, int } from 'drizzle-orm/sqlite-core';
-import { sql } from 'drizzle-orm';
+import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
 
 // 用户表
 export const user = sqliteTable("user", {
@@ -10,14 +9,16 @@ export const user = sqliteTable("user", {
 	image: text('image'),
 	createdAt: integer('createdAt', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updatedAt', { mode: 'timestamp' }).notNull(),
-  role: text('role').default('user'),
+	role: text('role').default('user'),
+	stripeCustomerId: text('stripe_customer_id'),
+    plan: text('plan').default('free'), // 'free' | 'pro'
 });
 
 // 会话表 (注意新增了 token 字段)
 export const session = sqliteTable("session", {
 	id: text("id").primaryKey(),
 	expiresAt: integer('expiresAt', { mode: 'timestamp' }).notNull(),
-  token: text('token').notNull().unique(), // 👈 缺的就是这个！
+  	token: text('token').notNull().unique(), // 👈 缺的就是这个！
 	createdAt: integer('createdAt', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updatedAt', { mode: 'timestamp' }).notNull(),
 	ipAddress: text('ipAddress'),
@@ -53,5 +54,13 @@ export const verification = sqliteTable("verification", {
 	updatedAt: integer('updatedAt', { mode: 'timestamp' }),
 });
 
-export const schema = { user, session, account, verification };
+export const document = sqliteTable("document", {
+    id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+    userId: text("userId").notNull(), // 关联到 user.id
+    title: text("title").notNull(),   // 文档标题
+    content: text("content"),         // 原始内容 (可选，如果太长就不存 SQL)
+    createdAt: integer('createdAt', { mode: 'timestamp' }).notNull(),
+});
+
+export const schema = { user, session, account, verification, document };
 export type User = typeof user.$inferSelect;

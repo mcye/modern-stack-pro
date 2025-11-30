@@ -1,9 +1,7 @@
 import { User } from '@repo/shared'; // ✨ 直接复用后端定义的类型！
 
 const API_URL = 
-  process.env.NEXT_PUBLIC_API_URL_PROD && process.env.NODE_ENV === 'production' 
-    ? process.env.NEXT_PUBLIC_API_URL_PROD 
-    : process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8787';
+    process.env.NEXT_PUBLIC_API_URL 
 
 export async function getUsers(): Promise<User[]> {
   // force-cache 意味着 Next.js 也会在服务端缓存这份数据
