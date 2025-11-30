@@ -29,10 +29,24 @@ export const createAuth = (db: LibSQLDatabase<typeof schema> | any) => {
         }
       }
     },
+    advanced: {
+        cookiePrefix: "better-auth",
+        // 禁用 crossSubdomainCookies，因为 localhost 和 workers.dev 不是子域关系
+        // crossSubdomainCookies: {
+        //     enabled: true,
+        //     domain: "" 
+        // },
+        defaultCookieAttributes: {
+            sameSite: "none", 
+            secure: true,     
+            httpOnly: true,   
+        }
+    },
     trustedOrigins: [
-      "http://localhost:3000", // 允许本地前端
-      "https://hypervigilant-monnie-supratemporal.ngrok-free.dev", // 允许 ngrok 前端
-      // "https://你的前端域名.vercel.app" // 以后上线了加这里
+      "http://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://hypervigilant-monnie-supratemporal.ngrok-free.dev",
+      // "https://你的前端域名.vercel.app"
     ],
     // 这里可以配置 Google, GitHub 等，今天先不配
   });

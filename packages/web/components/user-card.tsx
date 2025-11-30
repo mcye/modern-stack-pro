@@ -1,5 +1,6 @@
 "use client"
 import { authClient } from "@/lib/auth-client"
+import { getUsers } from "@/lib/api"
 import { type User } from "@repo/shared"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
@@ -13,6 +14,21 @@ export default function UserCard() {
 
     const router = useRouter()
     const [isPaying, setIsPaying] = useState(false) // 支付 Loading 状态
+    const [users, setUsers] = useState<User[]>([])
+    const [isLoadingUsers, setIsLoadingUsers] = useState(false)
+
+    const handleQueryUsers = async () => {
+        setIsLoadingUsers(true)
+        try {
+            const data = await getUsers()
+            setUsers(data)
+            console.log(data)
+        } catch (e) {
+            console.error(e)
+            alert(e)
+        }
+        setIsLoadingUsers(false)
+    }
 
     const handleSignOut = async () => {
         await authClient.signOut()
@@ -84,7 +100,7 @@ export default function UserCard() {
 
                 {/* 只有 Free 用户才显示升级按钮 */}
                 {user?.plan !== 'pro' && (
-                     <button 
+                    <button
                         onClick={handleUpgrade}
                         disabled={isPaying}
                         className="w-full bg-indigo-600 text-white py-2 rounded hover:bg-indigo-700 transition disabled:opacity-50 flex justify-center"
@@ -98,12 +114,36 @@ export default function UserCard() {
                 )}
             </div>
 
-            <button 
+            <button
                 onClick={handleSignOut}
                 className="mt-4 px-4 py-2 text-sm text-red-600 border border-red-200 rounded hover:bg-red-50 transition"
             >
                 Sign Out
             </button>
+
+            <div className="w-full border-t pt-4 mt-2">
+                <div className="flex justify-between items-center mb-4">
+                    <span className="text-gray-600">Users List</span>
+                    <button
+                        onClick={handleQueryUsers}
+                        disabled={isLoadingUsers}
+                        className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 transition disabled:opacity-50 text-sm"
+                    >
+                        {isLoadingUsers ? "Loading..." : "Query Users"}
+                    </button>
+                </div>
+
+                {users.length > 0 && (
+                    <div className="flex flex-col gap-2">
+                        {users.map((u) => (
+                            <div key={u.id} className="p-2 bg-gray-50 rounded border text-sm">
+                                <div className="font-medium">{u.name || 'Unknown'}</div>
+                                <div className="text-gray-500 text-xs">{u.email}</div>
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

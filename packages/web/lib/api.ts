@@ -6,7 +6,6 @@ const API_URL =
 export async function getUsers(): Promise<User[]> {
   // force-cache 意味着 Next.js 也会在服务端缓存这份数据
   // 如果你需要实时性，可以改成 'no-store'
-  console.log(API_URL);
   const res = await fetch(`${API_URL}/users`, { 
     cache: 'no-store' 
   });
@@ -15,5 +14,6 @@ export async function getUsers(): Promise<User[]> {
     throw new Error('Failed to fetch users');
   }
 
-  return res.json();
+  const data = await res.json();
+  return data.users;
 }

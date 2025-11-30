@@ -11,6 +11,7 @@ import { convertToModelMessages, streamText, embed, embedMany } from 'ai'
 import { createOpenAI } from '@ai-sdk/openai'
 import { Index } from "@upstash/vector"
 import { RecursiveCharacterTextSplitter } from "@langchain/textsplitters"
+import { rateLimit } from './middleware/rate-limit'
 
 // 定义环境变量类型
 type Bindings = {
@@ -22,8 +23,6 @@ type Bindings = {
   FRONTEND_URL: string
   OPENAI_API_KEY: string
   OPENAI_BASE_URL?: string
-  EMBEDDING_API_KEY: string
-  EMBEDDING_BASE_URL?: string
   UPSTASH_VECTOR_REST_URL: string
   UPSTASH_VECTOR_REST_TOKEN: string
 }
@@ -39,13 +38,18 @@ const app = new Hono<{ Bindings: Bindings; Variables: Variables }>()
 // 配置 CORS (非常重要，否则前端 fetch 会跨域失败)
 app.use('/*', cors({
   origin: ['http://localhost:3000', 'https://hypervigilant-monnie-supratemporal.ngrok-free.dev'], // 允许前端地址
-  allowHeaders: ['Content-Type', 'Authorization'],
+  allowHeaders: ['Content-Type', 'Authorization', 'better-auth-csrf-token'], // 👈 加上 better-auth 可能用到的 header
   allowMethods: ['POST', 'GET', 'OPTIONS'],
   exposeHeaders: ['Content-Length', 'Set-Cookie'], // 👈 增加 exposeHeaders
   maxAge: 600,
   credentials: true, // 允许携带 Cookie
-  
 }))
+
+// 🔥 关键：只对 /api/ai/* 和 /api/rag/* 开头的路由应用限流
+// 这样静态资源或普通查询不会误伤
+app.use('/api/chat', rateLimit)
+app.use('/api/document', rateLimit)
+app.use('/users', rateLimit)
 
 // 【核心】数据库中间件
 app.use('*', async (c, next) => {
